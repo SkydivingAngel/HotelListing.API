@@ -1,13 +1,18 @@
+using System;
 using HotelListing.API;
 using HotelListing.API.Data;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("HotelListingDbConnectionString");
-builder.Services.AddDbContext<HotelListingDbContext>(options =>
+builder.Services.AddDbContext<HotelDbContext>(options =>
 {
     options.UseSqlServer(connectionString, sqlOptions =>
     {
