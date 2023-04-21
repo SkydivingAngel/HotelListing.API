@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HotelListing.API.Migrations
 {
-    [DbContext(typeof(HotelDbContext))]
+    [DbContext(typeof(HotelListingDbContext))]
     partial class HotelDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -29,37 +29,17 @@ namespace HotelListing.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("CountryCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ShortName")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Countries");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Jamaica",
-                            ShortName = "JM"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Bahamas",
-                            ShortName = "BS"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Cayman Island",
-                            ShortName = "CI"
-                        });
                 });
 
             modelBuilder.Entity("HotelListing.API.Data.Hotel", b =>
@@ -70,7 +50,7 @@ namespace HotelListing.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("Adress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -89,32 +69,6 @@ namespace HotelListing.API.Migrations
                     b.HasIndex("CountryId");
 
                     b.ToTable("Hotels");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "Negril",
-                            CountryId = 1,
-                            Name = "Sandals Resort and Spa",
-                            Rating = 4.5
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Address = "George Town",
-                            CountryId = 3,
-                            Name = "Comfort Suites",
-                            Rating = 4.2999999999999998
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Address = "Nassua",
-                            CountryId = 2,
-                            Name = "Grand Palladium",
-                            Rating = 4.0
-                        });
                 });
 
             modelBuilder.Entity("HotelListing.API.Data.Hotel", b =>

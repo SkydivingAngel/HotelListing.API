@@ -3,9 +3,9 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace HotelListing.API.Data;
 
-public class HotelDbContext : DbContext
+public class HotelListingDbContext : DbContext
 {
-    public HotelDbContext(DbContextOptions options) : base(options)
+    public HotelListingDbContext(DbContextOptions options) : base(options)
     {
 
     }
