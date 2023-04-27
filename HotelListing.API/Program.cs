@@ -45,21 +45,11 @@ builder.Services.AddCors(options =>
 
 builder.Host.UseSerilog((ctx, lc) => lc.WriteTo.Console().ReadFrom.Configuration(ctx.Configuration));
 
-
-//var mapperConfig = new MapperConfiguration(cfg => 
-//{
-//    cfg.SourceMemberNamingConvention = LowerUnderscoreNamingConvention.Instance;
-//    cfg.DestinationMemberNamingConvention = PascalCaseNamingConvention.Instance;
-//    cfg.AddProfile(new MapperConfig());
-//});
-//IMapper mapper = mapperConfig.CreateMapper();
-//builder.Services.AddSingleton(mapper);
-
-
 builder.Services.AddAutoMapper(typeof(MapperConfig));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<ICountriesRepository, CountriesRepository>();
+builder.Services.AddScoped<IHotelsRepository, HotelsRepository>();
 
 var app = builder.Build();
 
