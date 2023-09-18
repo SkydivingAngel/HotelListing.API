@@ -5,44 +5,35 @@ using HotelListing.API.Models.Country;
 using AutoMapper;
 using HotelListing.API.Core.Contracts;
 using HotelListing.API.Exceptions;
-using HotelListing.API.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.OData.Query;
 
 namespace HotelListing.API.Controllers
 {
     [Route("api/v{version:apiVersion}/countries")]
-    //[Route("api/countries")]
     [ApiController]
-    [ApiVersion("1.0", Deprecated = true)]
-    public class CountriesController : ControllerBase
+    [ApiVersion("2.0")]
+    public class CountriesV2Controller : ControllerBase
     {
         private readonly IMapper mapper;
         private readonly ICountriesRepository countriesRepository;
-        private readonly ILogger<CountriesController> logger;
+        private readonly ILogger<CountriesV2Controller> logger;
 
-        public CountriesController(IMapper mapper, ICountriesRepository countriesRepository, ILogger<CountriesController> logger)
+        public CountriesV2Controller(IMapper mapper, ICountriesRepository countriesRepository, ILogger<CountriesV2Controller> logger)
         {
             this.countriesRepository = countriesRepository;
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        // GET: api/Countries/GetAll
-        [HttpGet("GetAll")]
+        // GET: api/Countries
+        [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<GetCountryDto>>> GetCountries()
         {
             var countries = await countriesRepository.GetAllAsync();
             var records = mapper.Map<List<GetCountryDto>>(countries);
             return Ok(records);
-        }
-
-        // GET: api/Countries/?StartIndex=0&pagesize=25&PageNumber=1
-        // GET:  https://localhost:7120/api/v1/Countries?StartIndex=0&pagesize=2&PageNumber=1
-        [HttpGet]
-        public async Task<ActionResult<PagedResult<GetCountryDto>>> GetPagedCountries([FromQuery] QueryParameters queryParameters)
-        {
-            var pagedCountriesResult = await countriesRepository.GetAllAsync<GetCountryDto>(queryParameters);
-            return Ok(pagedCountriesResult);
         }
 
         // GET: api/Countries/5
@@ -106,8 +97,7 @@ namespace HotelListing.API.Controllers
         // POST: api/Countries
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        //[Authorize]
-        [AllowAnonymous]
+        [Authorize]
         public async Task<ActionResult<Country>> PostCountry(CreateCountryDto createCountryDto)
         {
             //if (context.Countries == null)

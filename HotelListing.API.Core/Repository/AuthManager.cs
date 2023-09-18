@@ -1,14 +1,16 @@
-﻿using AutoMapper;
-using HotelListing.API.Contracts;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using AutoMapper;
+using HotelListing.API.Core.Contracts;
 using HotelListing.API.Data;
 using HotelListing.API.Models.Users;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
-namespace HotelListing.API.Repository
+namespace HotelListing.API.Core.Repository
 {
     public class AuthManager : IAuthManager
     {
@@ -16,15 +18,17 @@ namespace HotelListing.API.Repository
         private readonly UserManager<ApiUser> userManager;
         private readonly IConfiguration configuration;
         private ApiUser user;
+        private readonly ILogger<AuthManager> logger;
 
         private const string loginProvider = "HotelListingApi";
         private const string refreshToken = "RefreshToken";
 
-        public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration)
+        public AuthManager(IMapper mapper, UserManager<ApiUser> userManager, IConfiguration configuration, ILogger<AuthManager> logger)
         {
             this.mapper = mapper;
             this.userManager = userManager;
             this.configuration = configuration;
+            this.logger = logger;
         }
 
         public async Task<string> CreateRefreshToken()
@@ -41,6 +45,7 @@ namespace HotelListing.API.Repository
         // https://github.com/trevoirwilliams/HotelListing.API.NET/blob/master/HotelListing.API.Core/Repository/AuthManager.cs
         public async Task<AuthResponseDto> Login(LoginDto loginDto)
         {
+            logger.LogInformation($"Looking for user with email {loginDto.Email}");  
             user = await userManager.FindByEmailAsync(loginDto.Email);
 
             bool isValidUser = await userManager.CheckPasswordAsync(user, loginDto.Password);
@@ -49,6 +54,7 @@ namespace HotelListing.API.Repository
 
             if (user == null || isValidUser == false)
             {
+                logger.LogWarning($"User with email {loginDto.Email} not found");
                 return null;
             }
 
@@ -59,6 +65,8 @@ namespace HotelListing.API.Repository
             //}
 
             var token = await GenerateToken();
+
+            logger.LogInformation($"Token generated fro user with email {loginDto.Email} | Token {token}.");
 
             return new AuthResponseDto
             {
